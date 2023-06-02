@@ -1,0 +1,189 @@
+<?php
+require_once("dbcontroller.php");
+$db_handle = new DBController();
+$query = "SELECT * FROM course_title";
+$result = $db_handle->runQuery($query);
+
+
+?>
+
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Course Form</title>
+
+
+	<style>
+		nav {
+			background-color: #333;
+			display: flex;
+			justify-content: space-between;
+			padding: 1rem;
+		}
+
+		nav a {
+			color: #fff;
+			font-size: 1.2rem;
+			text-decoration: none;
+			margin-left: 1rem;
+			padding: 0.5rem;
+			border-radius: 0.5rem;
+		}
+
+		nav a:hover {
+			background-color: #555;
+		}
+
+		nav a.active {
+			background-color: #ccc;
+			color: #333;
+			cursor: default;
+		}
+
+		nav a.logout {
+			margin-left: auto;
+			background-color: #f00;
+		}
+
+		nav a.logout:hover {
+			background-color: #d00;
+		}
+
+		form {
+			max-width: 400px;
+			margin: 50px auto;
+			padding: 20px;
+			border: 1px solid #ccc;
+			background-color: #f2f2f2;
+			font-family: Arial, sans-serif;
+			font-size: 16px;
+			line-height: 1.5;
+		}
+
+		label {
+			display: block;
+			margin-bottom: 10px;
+		}
+
+		input[type="text"],
+		select {
+			display: block;
+			width: 100%;
+			padding: 10px;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			box-sizing: border-box;
+			font-size: 16px;
+			margin-bottom: 20px;
+		}
+
+		input[type="number"],
+		select {
+			display: block;
+			width: 100%;
+			padding: 10px;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			box-sizing: border-box;
+			font-size: 16px;
+			margin-bottom: 20px;
+		}
+
+		input[type="submit"] {
+			background-color: #4CAF50;
+			color: white;
+			padding: 10px 20px;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 16px;
+			margin-top: 10px;
+		}
+
+		input[type="submit"]:hover {
+			background-color: #45a049;
+
+		}
+
+		h1 {
+			text-align: center;
+		}
+	</style>
+</head>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+	function getDuration(val) {
+		$.ajax({
+			type: "POST",
+			url: "getDuration.php",
+			data: 'course_id=' + val,
+			success: function (data) {
+				$("#course_duration").html(data);
+				getPrice();
+
+			}
+
+		});
+	}
+	function getPrice(val) {
+		$.ajax({
+			type: "POST",
+			url: "getPrice.php",
+			data: 'duration_id=' + val,
+			success: function (data) {
+				$("#course_price").html(data);
+
+			}
+		});
+	}
+</script>
+
+<body>
+	<nav>
+
+		<a href="index.php">Home</a>
+		<a href="add_student.php">Add Student</a>
+		<a href="display_student.php">Display Student</a>
+		<a href="add_course.php" class="active">Add Course</a>
+		<a href="display_course.php">Display Course</a>
+		<a href="logout.php" class="logout">Logout</a>
+	</nav>
+	<h1>Student Course Form</h1>
+	<form action="confirm_course.php" method="post">
+
+		<label for="course">Course Title:</label>
+		<select id="course" name="course" required onChange="getDuration(this.value);">
+			<option value="" disabled selected>Select a course</option>
+			<?php
+			foreach ($result as $course) {
+				?>
+				<option value="<?php echo $course["id"]; ?>"><?php echo $course["title"]; ?></option>
+				<?php
+			}
+			?>
+
+		</select>
+		<label for="course_duration">Course Duration(in months):</label>
+
+		<select id="course_duration" name="course_duration" required onChange="getPrice(this.value);">
+
+			<option value="" disabled selected>Select a course duration</option>
+
+		</select>
+
+
+		<div id="course_price" name="course_price">
+
+
+		
+
+		</div>
+
+
+
+		<input type="submit" name="submit" value="Submit">
+	</form>
+</body>
+
+</html>
